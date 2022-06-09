@@ -4,7 +4,7 @@ using System.Net;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace WebApiSecurityDemo.Utils
+namespace WebApiSecurityDemo.Utils.Middlewares
 {
     public class ErrorHandlerMiddleware
     {

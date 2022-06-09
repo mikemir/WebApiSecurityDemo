@@ -19,6 +19,7 @@ using WebApiSecurityDemo.Model.Db;
 using WebApiSecurityDemo.Model.Validations;
 using WebApiSecurityDemo.Services;
 using WebApiSecurityDemo.Utils;
+using WebApiSecurityDemo.Utils.Middlewares;
 
 namespace WebApiSecurityDemo
 {
@@ -35,6 +36,8 @@ namespace WebApiSecurityDemo
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddMemoryCache();
+
             //https://docs.automapper.org/en/latest/Getting-started.html
             services.AddAutoMapper(typeof(Startup));
 
@@ -100,7 +103,7 @@ namespace WebApiSecurityDemo
         public void Configure(IApplicationBuilder app,
                               IWebHostEnvironment env,
                               IApiVersionDescriptionProvider apiVersionDescription,
-                              ILoggerService logger)
+                              ILoggerService loggerService)
         {
             if (env.IsDevelopment())
             {
@@ -124,14 +127,17 @@ namespace WebApiSecurityDemo
                     options.SerializeAsV2 = true;
                 });
             }
-
             //Agregamos el middleware
             //https://docs.microsoft.com/en-us/aspnet/core/fundamentals/middleware/?view=aspnetcore-3.1
-            app.UseErrorHandler(logger);
+            app.UseErrorHandler(loggerService);
 
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            //Implementación casera de RateRequest limit
+            //https://github.com/stefanprodan/AspNetCoreRateLimit#readme
+            app.UseRateLimit();
 
             //UseCors debe llamarse en el orden correcto.
             //Por ejemplo, UseCors se debe llamar a antes de UseResponseCaching

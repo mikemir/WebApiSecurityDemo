@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApiSecurityDemo.Model.Db;
 using WebApiSecurityDemo.Services;
+using WebApiSecurityDemo.Utils.Middlewares;
 
 namespace WebApiSecurityDemo.Controllers
 {
@@ -24,6 +25,7 @@ namespace WebApiSecurityDemo.Controllers
 
         // GET: api/Posts
         [HttpGet]
+        [LimitRequests(MaxRequests = 2, TimeWindow = 5)]
         public async Task<ActionResult<IEnumerable<Post>>> GetPosts([FromQuery] string searchTitle)
         {
             var posts = await _postService.GetPosts(searchTitle); ;
