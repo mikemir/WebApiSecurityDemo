@@ -49,7 +49,7 @@ namespace WebApiSecurityDemo
             services.AddApiVersioning(options =>
             {
                 options.AssumeDefaultVersionWhenUnspecified = true;
-                options.DefaultApiVersion = new ApiVersion(1, 0);
+                options.DefaultApiVersion = new ApiVersion(2, 0);
                 options.ReportApiVersions = true; //Colocar True solo cuando la aplicación se corra en ambiente de desarrollo
             });
 
@@ -73,6 +73,7 @@ namespace WebApiSecurityDemo
             services.AddScoped<ILoggerService, LoggerService>();
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IPostService, PostService>();
+            services.AddScoped<IFileUploadService, FileUploadService>();
 
             services.AddSwaggerGen(options =>
             {
