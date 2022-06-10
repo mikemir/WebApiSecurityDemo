@@ -23,7 +23,7 @@ namespace WebApiSecurityDemo.Services
             {
                 using var entryZipStream = entry.Open();
 
-                using var restrictedStream = new RestrictedStream(entryZipStream, entry.Length);
+                using var restrictedStream = new RestrictedStream(entryZipStream, MaxLength);
 
                 using var ms = new MemoryStream();
 
