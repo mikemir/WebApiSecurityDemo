@@ -3,11 +3,11 @@ using System;
 
 namespace WebApiSecurityDemo.Utils
 {
-    public class LoggerService : ILoggerService
+    public class LoggerManager : ILoggerManager
     {
         private readonly ILog _logger;
 
-        public LoggerService(ILog logger)
+        public LoggerManager(ILog logger)
         {
             _logger = logger;
         }

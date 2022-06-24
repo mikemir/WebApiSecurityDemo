@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using WebApiSecurityDemo.Model.Db;
 using WebApiSecurityDemo.Model.Dtos;
 using WebApiSecurityDemo.Services;
+using WebApiSecurityDemo.Utils.Middlewares;
 
 namespace WebApiSecurityDemo.Controllers
 {
@@ -25,6 +26,9 @@ namespace WebApiSecurityDemo.Controllers
         [HttpPost]
         public async Task<IActionResult> FileUpload(FileUploadDto fileUpload)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var file = _mapper.Map<FileUpload>(fileUpload);
 
             _fileUploadService.UploadFile(file);

@@ -9,9 +9,9 @@ namespace WebApiSecurityDemo.Utils.Middlewares
     public class ErrorHandlerMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly ILoggerService _logger;
+        private readonly ILoggerManager _logger;
 
-        public ErrorHandlerMiddleware(RequestDelegate next, ILoggerService logger)
+        public ErrorHandlerMiddleware(RequestDelegate next, ILoggerManager logger)
         {
             _next = next;
             _logger = logger;
@@ -41,7 +41,7 @@ namespace WebApiSecurityDemo.Utils.Middlewares
 
                 _logger.LogError(error);
 
-                var result = JsonSerializer.Serialize(new { message = error?.Message });
+                var result = JsonSerializer.Serialize(new { message = "Ocurrio un error." });
                 await response.WriteAsync(result);
             }
         }

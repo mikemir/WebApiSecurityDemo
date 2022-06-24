@@ -4,7 +4,7 @@ namespace WebApiSecurityDemo.Utils.Middlewares
 {
     public static class MiddlewareExtensions
     {
-        public static IApplicationBuilder UseErrorHandler(this IApplicationBuilder builder, ILoggerService loggerService)
+        public static IApplicationBuilder UseErrorHandler(this IApplicationBuilder builder, ILoggerManager loggerService)
         {
             return builder.UseMiddleware<ErrorHandlerMiddleware>(loggerService);
         }

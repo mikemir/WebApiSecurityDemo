@@ -13,22 +13,23 @@ namespace WebApiSecurityDemo.Services
 
         public void UploadFile(FileUpload fileUpload)
         {
-            var zFile = new ZipArchive(new MemoryStream(fileUpload.Content), ZipArchiveMode.Read);
+            using var zFile = new ZipArchive(new MemoryStream(fileUpload.Content), ZipArchiveMode.Read);
             var declaredSize = zFile.Entries.Sum(entry => entry.Length);
 
-            if (declaredSize > MaxLength)
-                throw new Exception("Archivo zip demasiado grande.");
+            //if (declaredSize > MaxLength)
+            //    throw new Exception("Archivo zip demasiado grande.");
 
             foreach (var entry in zFile.Entries)
             {
                 using var entryZipStream = entry.Open();
 
-                using var restrictedStream = new RestrictedStream(entryZipStream, MaxLength);
+                //using var restrictedStream = new RestrictedStream(entryZipStream, MaxLength);
 
                 using var ms = new MemoryStream();
 
                 //Internamente al hacer la copia no permitirá que se copie más del tamaño supuesto
-                restrictedStream.CopyTo(ms);
+                //restrictedStream.CopyTo(ms);
+                entryZipStream.CopyTo(ms);
 
                 //Guardamos los archivos descomprimidos
                 //File.WriteAllBytes(entry.Name, ms.ToArray());

@@ -1,5 +1,6 @@
 using FluentValidation.AspNetCore;
 using log4net;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -10,10 +11,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using WebApiSecurityDemo.Model.Db;
 using WebApiSecurityDemo.Model.Validations;
@@ -36,6 +39,7 @@ namespace WebApiSecurityDemo
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddHttpContextAccessor();
             services.AddMemoryCache();
 
             //https://docs.automapper.org/en/latest/Getting-started.html
@@ -63,15 +67,37 @@ namespace WebApiSecurityDemo
             {
                 options.AddDefaultPolicy(policy =>
                                   {
-                                      policy.WithOrigins("http://example.com",
-                                                          "http://www.contoso.com");
+                                      policy.AllowAnyOrigin();
                                   });
+            });
+
+            var signinKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("this is my custom Secret key for authentication"));
+
+            services.AddAuthentication(x =>
+            {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(o =>
+            {
+                o.SaveToken = true;
+                o.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ValidateLifetime = false,
+                    ValidateActor = false,
+                    ValidateIssuerSigningKey = false,
+                    ValidateTokenReplay = false,
+                    IssuerSigningKey = signinKey
+                };
             });
 
             services.AddSingleton(LogManager.GetLogger("WebApiSecurityDemo"));
 
-            services.AddScoped<ILoggerService, LoggerService>();
-            services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<ILoggerManager, LoggerManager>();
+            services.AddScoped<ITokenManager, TokenManager>();
+
+            services.AddSingleton<IAccountService, AccountService>();
             services.AddScoped<IPostService, PostService>();
             services.AddScoped<IFileUploadService, FileUploadService>();
 
@@ -104,7 +130,7 @@ namespace WebApiSecurityDemo
         public void Configure(IApplicationBuilder app,
                               IWebHostEnvironment env,
                               IApiVersionDescriptionProvider apiVersionDescription,
-                              ILoggerService loggerService)
+                              ILoggerManager loggerService)
         {
             if (env.IsDevelopment())
             {
@@ -132,7 +158,7 @@ namespace WebApiSecurityDemo
             //https://docs.microsoft.com/en-us/aspnet/core/fundamentals/middleware/?view=aspnetcore-3.1
             app.UseErrorHandler(loggerService);
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
 
             app.UseRouting();
 
@@ -145,6 +171,7 @@ namespace WebApiSecurityDemo
             //https://docs.microsoft.com/es-es/aspnet/core/security/cors?view=aspnetcore-3.1.
             app.UseCors();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

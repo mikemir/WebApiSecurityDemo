@@ -2,7 +2,7 @@
 
 namespace WebApiSecurityDemo.Utils
 {
-    public interface ILoggerService
+    public interface ILoggerManager
     {
         void LogWarn(string message);
 

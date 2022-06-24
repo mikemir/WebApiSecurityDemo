@@ -25,7 +25,7 @@ namespace WebApiSecurityDemo.Controllers
 
         // GET: api/Posts
         [HttpGet]
-        [LimitRequests(MaxRequests = 2, TimeWindow = 5)]
+        [LimitRequests(MaxRequests = 5, TimeWindow = 10)]
         public async Task<ActionResult<IEnumerable<Post>>> GetPosts([FromQuery] string searchTitle)
         {
             var posts = await _postService.GetPosts(searchTitle); ;
@@ -35,6 +35,7 @@ namespace WebApiSecurityDemo.Controllers
 
         // GET: api/Posts/5
         [HttpGet("{id}")]
+        [LimitRequests(MaxRequests = 2, TimeWindow = 5)]
         public async Task<ActionResult<Post>> GetPost(long id)
         {
             var post = await _postService.GetPostById(id);
@@ -44,7 +45,12 @@ namespace WebApiSecurityDemo.Controllers
                 return NotFound();
             }
 
-            return post;
+            return Ok(new
+            {
+                post.IdPost,
+                post.Title,
+                post.Content
+            });
         }
 
         //// POST: api/Posts

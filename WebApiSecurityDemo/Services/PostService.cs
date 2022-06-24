@@ -30,7 +30,7 @@ namespace WebApiSecurityDemo.Services
             //https://docs.microsoft.com/es-es/ef/core/querying/raw-sql
             //var param = new SqlParameter("textSearch", $"%{textSearch}%");
             var posts = await _dbContext.Posts
-                                        .FromSqlInterpolated($"SELECT * FROM POSTS WHERE Title LIKE '%{textSearch}%'")
+                                        .FromSqlRaw($"SELECT * FROM POSTS WHERE Title LIKE '%{textSearch}%'")
                                         .ToListAsync();
 
             return posts;
